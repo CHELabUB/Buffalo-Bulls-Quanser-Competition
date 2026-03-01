@@ -172,88 +172,88 @@ class TrajectoryPlanner:
 
 
 
-def robust_boundary_adjustment(x, z,
-                               keep_ratio=0.8,
-                               curve_degree=2,
-                               vertical_ratio_threshold=3.0):
+# def robust_boundary_adjustment(x, z,
+#                                keep_ratio=0.8,
+#                                curve_degree=2,
+#                                vertical_ratio_threshold=3.0):
 
-    x = np.asarray(x)
-    z = np.asarray(z)
+#     x = np.asarray(x)
+#     z = np.asarray(z)
 
-    # variance in both lateral and longitudinal directions
-    var_x = np.var(x)
-    var_z = np.var(z)
+#     # variance in both lateral and longitudinal directions
+#     var_x = np.var(x)
+#     var_z = np.var(z)
 
-    # checking which direction thhe outline is moving
-    # this is for determine the line or the turn!
-    vertical_dominant = var_z > vertical_ratio_threshold * var_x
+#     # checking which direction thhe outline is moving
+#     # this is for determine the line or the turn!
+#     vertical_dominant = var_z > vertical_ratio_threshold * var_x
 
 
-    n = len(x)
-    n_keep = int(n * keep_ratio)
-    if vertical_dominant:
-        # Work in x-space (since x nearly constant)
+#     n = len(x)
+#     n_keep = int(n * keep_ratio)
+#     if vertical_dominant:
+#         # Work in x-space (since x nearly constant)
 
-        sorted_idx = np.argsort(x)
-        x_sorted = x[sorted_idx]
+#         sorted_idx = np.argsort(x)
+#         x_sorted = x[sorted_idx]
 
-        best_width = np.inf
-        best_start = 0
+#         best_width = np.inf
+#         best_start = 0
 
-        for i in range(n - n_keep):
-            width = x_sorted[i + n_keep] - x_sorted[i]
-            if width < best_width:
-                best_width = width
-                best_start = i
+#         for i in range(n - n_keep):
+#             width = x_sorted[i + n_keep] - x_sorted[i]
+#             if width < best_width:
+#                 best_width = width
+#                 best_start = i
 
-        x_min = x_sorted[best_start]
-        x_max = x_sorted[best_start + n_keep]
+#         x_min = x_sorted[best_start]
+#         x_max = x_sorted[best_start + n_keep]
 
-        mask = (x >= x_min) & (x <= x_max)
+#         mask = (x >= x_min) & (x <= x_max)
 
-    else:
-        # Work in z-space
-        sorted_idx = np.argsort(z)
-        z_sorted = z[sorted_idx]
+#     else:
+#         # Work in z-space
+#         sorted_idx = np.argsort(z)
+#         z_sorted = z[sorted_idx]
 
-        best_width = np.inf
-        best_start = 0
+#         best_width = np.inf
+#         best_start = 0
 
-        for i in range(n - n_keep):
-            width = z_sorted[i + n_keep] - z_sorted[i]
-            if width < best_width:
-                best_width = width
-                best_start = i
+#         for i in range(n - n_keep):
+#             width = z_sorted[i + n_keep] - z_sorted[i]
+#             if width < best_width:
+#                 best_width = width
+#                 best_start = i
 
-        z_min = z_sorted[best_start]
-        z_max = z_sorted[best_start + n_keep]
+#         z_min = z_sorted[best_start]
+#         z_max = z_sorted[best_start + n_keep]
 
-        mask = (z >= z_min) & (z <= z_max)
+#         mask = (z >= z_min) & (z <= z_max)
 
-    x_inliers = x[mask]
-    z_inliers = z[mask]
+#     x_inliers = x[mask]
+#     z_inliers = z[mask]
 
-    ##### fit the line and the curve
-    if vertical_dominant:
-        # Fit x = f(z)
-        coeffs = np.polyfit(z_inliers, x_inliers, 1)
-        x_fit = np.polyval(coeffs, z)
-        return "vertical_line", x_fit, z
+#     ##### fit the line and the curve
+#     if vertical_dominant:
+#         # Fit x = f(z)
+#         coeffs = np.polyfit(z_inliers, x_inliers, 1)
+#         x_fit = np.polyval(coeffs, z)
+#         return "vertical_line", x_fit, z
 
-    else:
-        dx = np.diff(x_inliers)
-        dz = np.diff(z_inliers)
-        theta = np.unwrap(np.arctan2(dz, dx))
-        std_theta = np.std(theta)
+#     else:
+#         dx = np.diff(x_inliers)
+#         dz = np.diff(z_inliers)
+#         theta = np.unwrap(np.arctan2(dz, dx))
+#         std_theta = np.std(theta)
 
-        if std_theta < np.deg2rad(5):
-            # line
-            coeffs = np.polyfit(x_inliers, z_inliers, 1)
-            z_fit = np.polyval(coeffs, x)
-            return "line", x, z_fit
-        else:
-            # curve
-            coeffs = np.polyfit(x_inliers, z_inliers, curve_degree)
-            z_fit = np.polyval(coeffs, x)
-            return "curve", x, z_fit
+#         if std_theta < np.deg2rad(5):
+#             # line
+#             coeffs = np.polyfit(x_inliers, z_inliers, 1)
+#             z_fit = np.polyval(coeffs, x)
+#             return "line", x, z_fit
+#         else:
+#             # curve
+#             coeffs = np.polyfit(x_inliers, z_inliers, curve_degree)
+#             z_fit = np.polyval(coeffs, x)
+#             return "curve", x, z_fit
    
