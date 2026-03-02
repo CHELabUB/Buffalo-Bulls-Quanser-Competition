@@ -1,8 +1,8 @@
 # Logic of our control 
 Note upfront: The control code mainly presents two parts: Line keeping using Stanley steering
 
-1. Lane keeping using Stanley steering control
-2. Vision-based line detection and projection
+1. Vision-based line detection and projection
+2. Lane keeping using Stanley steering control
 
 ---
 ## Line Detection:
