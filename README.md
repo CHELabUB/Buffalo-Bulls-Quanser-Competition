@@ -8,4 +8,24 @@ Following the instructions on the webpage: [Development Guide for the Developmen
 ```bash
 /usr/bin/QLabs
 ```
-
+### 2 Open a new terminal and launch the competition simulaiton
+```bash
+docker exec -it virtual-qcar2 bash\
+cd /home/qcar2_scripts/python\
+python3 Base_Scenarios_Python/Setup_Competition_Map.py
+```
+### 3 Open a new terminal and launch Qcar2
+```bash
+cd /home/$USER/Documents/ACC_Development/isaac_ros_common
+./scripts/run_dev.sh  /home/$USER/Documents/ACC_Development/Development\
+colcon build\
+source install/setup.bash\
+ros2 launch qcar2_nodes qcar2_virtual_launch.py\
+```
+### 4 Open a new terminal to run our code
+```bash
+docker exec -it isaac_ros_dev-x86_64-container bash\
+source source install/setup.bash\
+cd ~/Documents/Buffalo-Bulls-Quanser-Competition/Control
+python3 control_modified.py
+```
